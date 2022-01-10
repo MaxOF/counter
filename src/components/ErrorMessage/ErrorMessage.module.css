@@ -1,0 +1,17 @@
+.countStyle {
+    font-size: 45px;
+    padding: 10px;
+}
+
+.container {
+    text-align: center;
+    background-color: #6AE0FF;
+    min-width: 250px;
+    border-radius: 15px;
+}
+.incorrectMessage {
+    font-size: 40px;
+    font-weight: bold;
+    color: red;
+    padding: 13px;
+}
