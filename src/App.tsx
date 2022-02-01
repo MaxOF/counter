@@ -5,6 +5,9 @@ import s from './components/Counter/Counter.module.css'
 import {Input} from "./components/Counter/Input";
 import Button from "./components/Button/Button";
 import {ErrorMessage} from "./components/ErrorMessage/ErrorMessage";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStateType} from "./bll/store";
+// import {incValuesTC, setValueFromLocalStorageAC, setValueFromLocalStorageTC} from "./bll/counter-reducer";
 
 export type counterMessageType = null | 'Press set to enter your value' | 'Incorrect value, try again'
 
@@ -20,13 +23,16 @@ function App() {
     const [resetDisabled, setResetDisabled] = useState(false)
     const [incDisabled, setIncDisabled] = useState(false)
 
-    useEffect(() => {
-        let startValueAsString = localStorage.getItem('startValue')
-        if (startValueAsString) {
-            let newStartValueAsString = JSON.parse(startValueAsString)
-            setStartValue(newStartValueAsString)
-        }
-    }, [])
+    const value = useSelector<AppStateType, number>(state => state.counter.value)
+    const dispatch = useDispatch()
+
+    // useEffect(() => {
+    //     let startValueAsString = localStorage.getItem('startValue')
+    //     if (startValueAsString) {
+    //         let newStartValueAsString = JSON.parse(startValueAsString)
+    //         setStartValue(newStartValueAsString)
+    //     }
+    // }, [])
 
     useEffect(() => {
         let maxValueAsString = localStorage.getItem('startValue')
@@ -35,6 +41,11 @@ function App() {
             setStartValue(newMaxValueAsString)
         }
     }, [])
+
+    useEffect(() => {
+        // dispatch(setValueFromLocalStorageTC())
+    }, [])
+
 
     const onSet = () => {
         setCounterMessage(null)
@@ -48,7 +59,8 @@ function App() {
     const addInc = () => {
         if (inc < maxValue) {
             let newInc = Number(inc)
-            setInc(newInc + 1)
+            // setInc(newInc + 1)
+            // dispatch(incValuesTC(newInc + 1))
         }
     }
     const onReset = () => {
