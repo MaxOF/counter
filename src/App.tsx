@@ -5,51 +5,45 @@ import s from './components/Counter/Counter.module.css'
 import {Input} from "./components/Counter/Input";
 import Button from "./components/Button/Button";
 import {ErrorMessage} from "./components/ErrorMessage/ErrorMessage";
-import {useDispatch, useSelector} from "react-redux";
+
 import {AppStateType} from "./bll/store";
+import {
+    counterMessageType,
+    incCounterValueAC,
+    setCounterMessageAC,
+    setMaxValueFromLocalStorageAC,
+    setMaxValueFromLocalStorageTC, setStartValueFromLocalStorageAC,
+    setStartValueFromLocalStorageTC,
+} from "./bll/counter-reducer";
+import {useDispatch, useSelector} from "react-redux";
+
 // import {incValuesTC, setValueFromLocalStorageAC, setValueFromLocalStorageTC} from "./bll/counter-reducer";
 
-export type counterMessageType = null | 'Press set to enter your value' | 'Incorrect value, try again'
 
 function App() {
 
-    const [startValue, setStartValue] = useState(0)
-    const [maxValue, setMaxValue] = useState(10)
+    const startValue = useSelector<AppStateType, number>(state => state.counter.startValue)
+    const maxValue = useSelector<AppStateType, number>(state => state.counter.maxValue)
+    const counterMessage = useSelector<AppStateType, counterMessageType>(state => state.counter.counterMessage)
+    let inc = useSelector<AppStateType, number>(state => state.counter.inc)
 
-    const [inc, setInc] = useState(startValue)
-    const [counterMessage, setCounterMessage] = useState<counterMessageType>(null)
+    const dispatch = useDispatch()
 
     const [onDisabled, setOnDisabled] = useState(false)
     const [resetDisabled, setResetDisabled] = useState(false)
     const [incDisabled, setIncDisabled] = useState(false)
 
-    const value = useSelector<AppStateType, number>(state => state.counter.value)
-    const dispatch = useDispatch()
-
-    // useEffect(() => {
-    //     let startValueAsString = localStorage.getItem('startValue')
-    //     if (startValueAsString) {
-    //         let newStartValueAsString = JSON.parse(startValueAsString)
-    //         setStartValue(newStartValueAsString)
-    //     }
-    // }, [])
-
     useEffect(() => {
-        let maxValueAsString = localStorage.getItem('startValue')
-        if (maxValueAsString) {
-            let newMaxValueAsString = JSON.parse(maxValueAsString)
-            setStartValue(newMaxValueAsString)
-        }
+        dispatch(setStartValueFromLocalStorageTC())
     }, [])
-
     useEffect(() => {
-        // dispatch(setValueFromLocalStorageTC())
+        dispatch(setMaxValueFromLocalStorageTC())
     }, [])
 
 
     const onSet = () => {
-        setCounterMessage(null)
-        setInc(startValue)
+        dispatch(setCounterMessageAC(null))
+        dispatch(incCounterValueAC(startValue))
         setOnDisabled(true)
         setIncDisabled(false)
         setResetDisabled(false)
@@ -58,25 +52,23 @@ function App() {
     }
     const addInc = () => {
         if (inc < maxValue) {
-            let newInc = Number(inc)
-            // setInc(newInc + 1)
-            // dispatch(incValuesTC(newInc + 1))
+            dispatch(incCounterValueAC(++inc))
         }
     }
     const onReset = () => {
-        setInc(startValue)
+        dispatch(incCounterValueAC(startValue))
     }
     const onChangeStartValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setOnDisabled(false)
         setIncDisabled(true)
         setResetDisabled(true)
         let currentValue = +e.currentTarget.value
-        setStartValue(currentValue)
+        dispatch(setStartValueFromLocalStorageAC(currentValue))
         if (currentValue >= maxValue || currentValue < 0) {
-            setCounterMessage('Incorrect value, try again')
+            dispatch(setCounterMessageAC('Incorrect value, try again'))
         }
         if (currentValue < maxValue) {
-            setCounterMessage('Press set to enter your value')
+            dispatch(setCounterMessageAC('Press set to enter your value'))
         }
     }
     const onChangeMaxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,12 +76,12 @@ function App() {
         setIncDisabled(true)
         setResetDisabled(true)
         let currentValue = +e.currentTarget.value
-        setMaxValue(currentValue)
+        dispatch(setMaxValueFromLocalStorageAC(currentValue))
         if (currentValue <= startValue || currentValue < 0) {
-            setCounterMessage('Incorrect value, try again')
+            dispatch(setCounterMessageAC('Incorrect value, try again'))
         }
         if (currentValue > startValue) {
-            setCounterMessage('Press set to enter your value')
+            dispatch(setCounterMessageAC('Press set to enter your value'))
         }
     }
 
@@ -109,9 +101,9 @@ function App() {
                             max value
                             <span>
                         <Input
-                               value={maxValue}
-                               onChange={onChangeMaxValueHandler}
-                               style={inputErrorStyle}
+                            value={maxValue}
+                            onChange={onChangeMaxValueHandler}
+                            style={inputErrorStyle}
                         />
                         </span>
                         </div>
@@ -138,9 +130,9 @@ function App() {
             </div>
             <div className="counter">
                 <ErrorMessage inc={inc}
-                       maxValue={maxValue}
-                       counterMessage={counterMessage}
-                       startValue={startValue}
+                              maxValue={maxValue}
+                              counterMessage={counterMessage}
+                              startValue={startValue}
                 />
                 <div className={'buttonsStyle'}>
                     <Button title={'inc'}

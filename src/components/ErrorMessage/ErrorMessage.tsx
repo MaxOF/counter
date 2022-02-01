@@ -1,6 +1,7 @@
 import React from 'react';
-import {counterMessageType} from "../../App";
+
 import s from './ErrorMessage.module.css'
+import {counterMessageType} from "../../bll/counter-reducer";
 
 type PropsType = {
     inc: number
@@ -11,6 +12,7 @@ type PropsType = {
 
 
 export const ErrorMessage = (props: PropsType) => {
+
 
     const changeClass = () => {
         if(props.inc === props.maxValue) {
